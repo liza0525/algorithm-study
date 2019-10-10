@@ -11,18 +11,17 @@ for test in range(10):
         tree_info.append(tmp)
 
     i = 1
-    stack_ch = [tree_info[i][1]]
-    stack_n = [i]
+    stack = [(i, tree_info[i][1])]
     visited.append(i)
 
-    while len(visited) < N:
+    while len(visited) < N or stack:
         if len(tree_info[i]) >= 3:
             i = int(tree_info[i].pop(2))
-            stack_ch.append(tree_info[i][1])
-            stack_n.append(i)
+            stack.append((i, tree_info[i][1]))
             visited.append(i)
         elif len(tree_info[i]) == 2:
-            res += stack_ch.pop()
-            i = stack_n.pop()
+            tmp_i, tmp_ch = stack.pop()
+            i = tmp_i
+            res += tmp_ch
 
     print('#{} {}'.format(test+1, res))
