@@ -1,7 +1,3 @@
-import sys
-sys.stdin = open('../input.txt', 'r')
-
-
 for test in range(int(input())):
     N, K = map(int, input().split())
     line = input()

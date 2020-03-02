@@ -1,6 +1,3 @@
-import sys
-sys.stdin = open('input.txt', 'r')
-
 for test in range(10):
     N = int(input())
     visited = []

@@ -1,6 +1,3 @@
-import sys
-sys.stdin = open('max_money.txt', 'r')
-
 for test in range(int(input())):
     money, n = input().split()
     nums = [int(ch) for ch in money]
