@@ -1,6 +1,3 @@
-import sys
-sys.stdin = open('../input.txt', 'r')
-
 N = int(input())
 times, pays = [0], [0]
 for _ in range(N):
