@@ -1,58 +1,50 @@
 ds = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
+def virus(g):
+    stack = []
+    temp = [[0]*M for _ in range(N)]
+    for n in range(N*M):
+        i, j = n // M, n % M
+        temp[i][j] = g[i][j]
 
-def is_field(i, j):
-    return 0 <= i < N and 0 <= j < M
-
-
-def virus(i, j):
-    stack =[(i, j)]
+    for n in range(N*M):
+        i, j = n // M, n % M
+        if temp[i][j] == 2:
+            stack.append((i, j))
 
     while stack:
         si, sj = stack.pop()
         for di, dj in ds:
             ni, nj = si + di, sj + dj
-            if is_field(ni, nj) and not g[ni][nj]:
+            if 0 <= ni < N and 0 <= nj < M and not temp[ni][nj]:
                 stack.append((ni, nj))
-                g[ni][nj] = 2
+                temp[ni][nj] = 2
+    return sum(temp, []).count(0)
 
-def wall(cand, d):
-    global g, max_res, visited
+def wall(d, next):
+    global max_res
     if d == 3:
-        temp = [[0]*M for _ in range(N)]
-        for n in range(N*M):
-            i, j = n // M, n % M
-            temp[i][j] = g[i][j]
-
-        for i, j in cand:
-            g[i][j] = 1
-
-        for n in range(N*M):
-            i, j = n // M, n % M
-            if g[i][j] == 2:
-                virus(i, j)
-
-        res = sum(g, []).count(0)
+        res = virus(g)
         if res > max_res:
             max_res = res
 
-        for n in range(N*M):
-            i, j = n // M, n % M
-            g[i][j] = temp[i][j]
     else:
-        for n in range(N*M):
-            i, j = n // M, n % M
-            if g[i][j] == 0 and (i, j) not in cand:
-                cand.append((i, j))
-                wall(cand, d+1)
-                cand.pop()
-
+        for n in range(next, len(space)):
+            i, j = space[n]
+            if not g[i][j]:
+                g[i][j] = 1
+                wall(d+1, next+1)
+                g[i][j] = 0
 
 N, M = map(int, input().split())
 g = [list(map(int, input().split())) for _ in range(N)]
+space = []
 max_res = 0
-visited = []
+for n in range(N*M):
+    i, j = n // M, n % M
+    if g[i][j] == 0:
+        space.append((i, j))
 
-wall([], 0)
+wall(0, 0)
 
 print(max_res)
