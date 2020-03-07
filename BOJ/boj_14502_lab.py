@@ -1,7 +1,9 @@
 ds = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
 def virus(g):
+    global min_spread
     stack = []
+    spread = 0
     temp = [[0]*M for _ in range(N)]
     for n in range(N*M):
         i, j = n // M, n % M
@@ -19,15 +21,14 @@ def virus(g):
             if 0 <= ni < N and 0 <= nj < M and not temp[ni][nj]:
                 stack.append((ni, nj))
                 temp[ni][nj] = 2
-    return sum(temp, []).count(0)
+                spread += 1
+                if spread >= min_spread:
+                    return
+    min_spread = spread
 
 def wall(d, next):
-    global max_res
     if d == 3:
-        res = virus(g)
-        if res > max_res:
-            max_res = res
-
+        virus(g)
     else:
         for n in range(next, len(space)):
             i, j = space[n]
@@ -39,7 +40,8 @@ def wall(d, next):
 N, M = map(int, input().split())
 g = [list(map(int, input().split())) for _ in range(N)]
 space = []
-max_res = 0
+empty = sum(g, []).count(0)
+min_spread = N * M + 1
 for n in range(N*M):
     i, j = n // M, n % M
     if g[i][j] == 0:
@@ -47,4 +49,4 @@ for n in range(N*M):
 
 wall(0, 0)
 
-print(max_res)
+print(empty - min_spread - 3)
