@@ -1,6 +1,3 @@
-import sys
-sys.stdin = open('../input.txt', 'r')
-
 N = int(input())
 cp = [list(map(int, input().split())) for _ in range(N)] # 집 별 색깔 별 가격
 price = [cp[0]] + [[0 ,0, 0] for _ in range(N-1)]

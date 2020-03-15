@@ -1,7 +1,3 @@
-import sys
-from pprint import pprint
-sys.stdin = open('../input.txt', 'r')
-
 ds = [(1, 0), (0, 1), (0, -1), (-1, 0)]
 
 def bfs(i, j):
