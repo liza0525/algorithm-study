@@ -1,6 +1,3 @@
-import sys
-sys.stdin = open('../input.txt', 'r')
-
 N, K = map(int, input().split())
 values = sorted([int(input()) for _ in range(N)])
 # print(values)

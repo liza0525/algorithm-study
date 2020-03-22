@@ -1,7 +1,3 @@
-import sys
-from pprint import pprint
-sys.stdin = open('../input.txt', 'r')
-
 ds = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
 def move(i, j, di, dj):
@@ -28,11 +24,9 @@ def play(ri, rj, bi, bj, d):
                     return sd
                 if nri == nbi and nrj == nbj:
                     if rcnt > bcnt:
-                        nri -= di
-                        nrj -= dj
+                        nri, nrj = nri-di, nrj-dj
                     else:
-                        nbi -= di
-                        nbj -= dj
+                        nbi, nbj = nbi-di, nbj-dj
                 if (nri, nrj, nbi, nbj) not in visited:
                     visited.append((nri, nrj, nbi, nbj))
                     queue.append((nri, nrj, nbi, nbj, sd+1))
