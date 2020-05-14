@@ -1,7 +1,5 @@
-from pprint import pprint
 import sys
 from copy import deepcopy
-from collections import deque
 sys.stdin = open('../input.txt', 'r')
 
 
@@ -10,11 +8,15 @@ ds = [(0, -1), (0, 1), (-1, 0), (1, 0)]
 def bfs():
     global max_flower
     flower = 0
+    dist = 2
+    visited = [[0] * M for _ in range(N)]
     garden1 = deepcopy(garden)
     for i, j in g_group:
         garden1[i][j] = 'G'
+        visited[i][j] = 1
     for i, j in r_group:
         garden1[i][j] = 'R'
+        visited[i][j] = 1
     queue = g_group + r_group
 
     while queue:
@@ -24,21 +26,27 @@ def bfs():
             si, sj = temp.pop()
             for di, dj in ds:
                 ni, nj = si + di, sj + dj
-                if 0 <= ni < N and 0 <= nj < M and garden1[ni][nj] != 0:
-                    if garden1[ni][nj] == 'F':
-                        continue
-                    if garden1[si][sj] == 'R':
-                        if garden1[ni][nj] == 'G':
-                            garden1[ni][nj] = 'F'
-                            flower += 1
-                        else:
-                            garden1[ni][nj] = 'R'
-                    elif garden1[si][sj] == 'G':
-                        if garden1[ni][nj] == 'R':
-                            garden1[ni][nj] = 'F'
-                            flower += 1
-                        else:
-                            garden1[ni][nj] = 'G'
+                if 0 <= ni < N and 0 <= nj < M:
+                    if garden1[ni][nj] != 0 and (not visited[ni][nj] or visited[ni][nj] == dist):
+                        if garden1[ni][nj] == 'F':
+                            continue
+                        if garden1[si][sj] == 'R':
+                            if garden1[ni][nj] == 'G':
+                                garden1[ni][nj] = 'F'
+                                flower += 1
+                            else:
+                                garden1[ni][nj] = 'R'
+                                queue.append((ni, nj))
+                                visited[ni][nj] = dist
+                        elif garden1[si][sj] == 'G':
+                            if garden1[ni][nj] == 'R':
+                                garden1[ni][nj] = 'F'
+                                flower += 1
+                            else:
+                                garden1[ni][nj] = 'G'
+                                queue.append((ni, nj))
+                                visited[ni][nj] = dist
+        dist += 1
     if flower > max_flower:
         max_flower = flower
 
