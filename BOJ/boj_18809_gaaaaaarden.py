@@ -1,89 +1,76 @@
 import sys
-from copy import deepcopy
 sys.stdin = open('../input.txt', 'r')
+from itertools import combinations
+from collections import deque
 
 
 ds = [(0, -1), (0, 1), (-1, 0), (1, 0)]
 
+
 def bfs():
-    global max_flower
     flower = 0
-    dist = 2
+    g1 = [[0] * M for _ in range(N)]
+    for i in range(N*M):
+        row, col = i // M, i % M
+        g1[row][col] = g[row][col]
     visited = [[0] * M for _ in range(N)]
-    garden1 = deepcopy(garden)
-    for i, j in g_group:
-        garden1[i][j] = 'G'
+    q = deque()
+    for idx in r_group:
+        i, j = beedable[idx]
+        g1[i][j] = 'R'
         visited[i][j] = 1
-    for i, j in r_group:
-        garden1[i][j] = 'R'
+        q.append((i, j))
+    for idx in g_group:
+        i, j = beedable[idx]
+        g1[i][j] = 'G'
         visited[i][j] = 1
-    queue = g_group + r_group
-
-    while queue:
-        temp = queue
-        queue = []
-        while temp:
-            si, sj = temp.pop()
-            for di, dj in ds:
-                ni, nj = si + di, sj + dj
-                if 0 <= ni < N and 0 <= nj < M:
-                    if garden1[ni][nj] != 0 and (not visited[ni][nj] or visited[ni][nj] == dist):
-                        if garden1[ni][nj] == 'F':
-                            continue
-                        if garden1[si][sj] == 'R':
-                            if garden1[ni][nj] == 'G':
-                                garden1[ni][nj] = 'F'
-                                flower += 1
-                            else:
-                                garden1[ni][nj] = 'R'
-                                queue.append((ni, nj))
-                                visited[ni][nj] = dist
-                        elif garden1[si][sj] == 'G':
-                            if garden1[ni][nj] == 'R':
-                                garden1[ni][nj] = 'F'
-                                flower += 1
-                            else:
-                                garden1[ni][nj] = 'G'
-                                queue.append((ni, nj))
-                                visited[ni][nj] = dist
-        dist += 1
-    if flower > max_flower:
-        max_flower = flower
+        q.append((i, j))
 
 
-def select_r(r_group, d, next):
-    if d == R:
-        bfs()
-    else:
-        for i in range(next, N*M):
-            row, col = i // M, i % M
-            if garden[row][col] == 2:
-                if (row, col) not in visited_g:
-                    r_group.append((row, col))
-                    select_r(r_group, d+1, i+1)
-                    r_group.pop()
+    while q:
+        si, sj = q.popleft()
+        for di, dj in ds:
+            ni, nj = si+di, sj+dj
+            if not (0 <= ni < N and 0 <= nj < M): continue
+            if g1[ni][nj] == 'F': continue
+            if g1[ni][nj] == 0: continue
+            if g1[ni][nj] == g1[si][sj]: continue
+            if not visited[ni][nj] or visited[si][sj] + 1 == visited[ni][nj]:
+                if g1[si][sj] == 'G':
+                    if g1[ni][nj] == 'R':
+                        g1[ni][nj] = 'F'
+                        flower += 1
+                    else:
+                        g1[ni][nj] = 'G'
+                        q.append((ni, nj))
+                        visited[ni][nj] = visited[si][sj] + 1
+                elif g1[si][sj] == 'R':
+                    if g1[ni][nj] == 'G':
+                        g1[ni][nj] = 'F'
+                        flower += 1
+                    else:
+                        g1[ni][nj] = 'R'
+                        q.append((ni, nj))
+                        visited[ni][nj] = visited[si][sj] + 1
+    return flower
 
 
-def select_g(g_group, d, next):
-    if d == G:
-        select_r(r_group, 0, 0)
-    else:
-        for i in range(next, N*M):
-            row, col = i // M, i % M
-            if garden[row][col] == 2:
-                visited_g.append((row, col))
-                g_group.append((row, col))
-                select_g(g_group, d+1, i+1)
-                visited_g.pop()
-                g_group.pop()
-
-
-beedable = [] # 뿌릴 수 있는 곳 좌표
-g_group, r_group = [], []
-visited_g = []
 N, M, G, R = map(int, input().split())
-garden = [list(map(int, input().split())) for _ in range(N)]
+g = [list(map(int, input().split())) for _ in range(N)]
+beedable = list()
 max_flower = 0
 
-select_g(g_group, 0, 0)
+for i in range(N * M):
+    row, col = i // M, i % M
+    if g[row][col] == 2:
+        beedable.append((row, col))
+
+for c1 in combinations(range(len(beedable)), R+G):
+    for c2 in combinations(range(R+G), R):
+        r_group, g_group = [], []
+        for i in range(R+G):
+            if i in c2: r_group.append(c1[i])
+            else: g_group.append(c1[i])
+        max_flower = max(max_flower, bfs())
+
 print(max_flower)
