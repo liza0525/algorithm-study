@@ -12,20 +12,19 @@ def S(num):
 
 
 def L(num):
-    str_num = str(num)
-    return int(str_num[1:] + str_num[0]), 'L'
+    return (num % 1000)*10+(num // 1000), 'L'
 
 
 def R(num):
-    str_num = str(num)
-    return int(str_num[-1] + str_num[:-1]), 'R'
+    return (num // 10)+(num % 10)*1000, 'R'
 
+for _ in range(int(input())):
+    A, B = map(int, input().split())
 
-def bfs(num):
     queue = collections.deque()
-    queue.append(num)
+    queue.append(A)
     visited = [[0, ''] for _ in range(10000)]
-    visited[num][0] = -1
+    visited[A][0] = -1
     while queue:
         snum = queue.popleft()
         for nnum, char in [D(snum), S(snum), L(snum), R(snum)]:
@@ -33,13 +32,6 @@ def bfs(num):
                 queue.append(nnum)
                 visited[nnum][0] = snum
                 visited[nnum][1] = char
-    return visited
-
-for _ in range(int(input())):
-    A, B = map(int, input().split())
-    visited = [[0, ''] for _ in range(10000)]
-
-    visited = bfs(A)
 
     res, num = '', B
     while num != A:
