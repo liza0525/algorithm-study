@@ -1,57 +1,53 @@
 import sys
 sys.stdin = open('../input.txt', 'r')
-from pprint import pprint
-
 
 import itertools
-import collections
 
 
-ds = [(0, -1), (1, 0), (0, 1)]
+def set_archers(archers):
+    # print('archers', archers)
+    global max_cnt
+    enermies = []
+    for idx in range(N * M):
+        row, col = idx // M, idx % M
+        if g[row][col]:
+            enermies.append([row, col])
 
+    cnt = 0
 
-def move():
-    pass
+    while enermies:
+        remove_e = []
+        for j in archers:
+            cand = []
+            for i in range(len(enermies)):
+                dist = abs(enermies[i][0] - N) + abs(enermies[i][1] - j)
+                if dist <= D:
+                    cand.append([dist, enermies[i][1], i])
+            if cand:
+                d1, ecol, i1 = sorted(cand).pop(0)
+                if i1 not in remove_e:
+                    remove_e.append(i1)
+                    cnt += 1
 
+        for i in range(len(enermies) - 1, -1, -1):
+            if i not in remove_e:
+                enermies[i][0] += 1
+                if enermies[i][0] == N:
+                    remove_e.append(i)
 
-def set_archers(archers_j):
-    g1 = [[0] * M for _ in range(N+1)]
-    for i in range(N*M):
-        row, col = i // M, i % M
-        g1[N - row][col] = g[row][col]
+        for i in reversed(sorted(remove_e)):
+            enermies.pop(i)
 
-    count, wall = 0, 0
-
-    # for j in archers_j:
-    #     g1[0][j] = 2 # 궁수
-
-    while count + wall != e_num:
-        visited = [[0] * M for _ in range(N+1)]
-        for j in archers_j:
-            queue = collections.deque()
-            queue.append((0, j))
-            dist, cand = 0, []
-            while queue:
-                cand = []
-                si, sj = queue.popleft()
-                dist += 1
-                if dist > D: continue
-                for di, dj in ds:
-                    ni, nj = si + di, sj + dj
-                    if ni == 0: continue
-                    if not (0 <= ni < N and 0 <= nj < M): continue
-                    if g1[ni][nj] == 1:
-                        pass
-
+    if cnt > max_cnt:
+        max_cnt = cnt
 
 
 N, M, D = map(int, input().split())
 g = [list(map(int, input().split())) for _ in range(N)]
 g.append([0] * M)
-e_num = sum(sum(g, []))
-max_count = 0
+max_cnt = 0
 
-for archers_j in list(itertools.combinations([i for i in range(M)], 3)):  # 궁수의 j 인덱스 셋
-    set_archers(archers_j)
+for archers in map(list, itertools.combinations([i for i in range(M)], 3)):  # 궁수의 j 인덱스 셋
+    set_archers(archers)
 
-print(max_count)
+print(max_cnt)
