@@ -6,7 +6,9 @@ ds = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1)]
 
 
 def rotate_move(): # 물고기 움직이기
-    pass
+    for num in (1, 17):
+        pass
+
 
 def eating(i, j, ndi, ndj): # 현재 인덱스와 현재 바라보는 방향
     pass
