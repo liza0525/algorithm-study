@@ -3,24 +3,20 @@ from collections import deque
 def solution(bridge_length, weight, trucks):
     time = 0
     trucks = deque(trucks)
-    truck_num = len(trucks)
-    passed, bridge = deque(), deque()
-    while len(passed) < truck_num:
-        if not bridge:
-            bridge.append(trucks.popleft())
-            time += 1
-        if len(bridge) == bridge_length:
-            passed.append(bridge.popleft())
-            bridge.append(trucks.popleft())
-            time += (bridge_length + 1)
-        else:
+    bridge = deque([0] * bridge_length)
+
+    while trucks:
+        if trucks:
+            bridge.popleft()
             if sum(bridge) + trucks[0] > weight:
-                pass
+                bridge.append(0)
             else:
-                pass
+                bridge.append(trucks.popleft())
+        time += 1
 
-
-    return time
+    return time + bridge_length
 
 
 print(solution(2, 10, [7, 4, 5, 6]))
+print(solution(100, 100, [10]))
+print(solution(100, 100, [10, 10, 10, 10, 10, 10, 10, 10, 10, 10]))
