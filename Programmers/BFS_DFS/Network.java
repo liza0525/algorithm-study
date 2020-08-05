@@ -1,4 +1,7 @@
-class Solution {
+// 프로그래머스 코딩테스트 연습 - 네트워크
+package BFS_DFS;
+
+class Network {
     
     public static void main(String[] args) {
         int a = 3;
