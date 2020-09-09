@@ -12,7 +12,8 @@ def solution(N, stages):
                     stop += 1
         fail_prob = stop / arrival if arrival != 0 else 0
         fail_probs.append([now_stage, fail_prob])
-    return list(map(list, zip(*sorted(fail_probs, key=lambda x:(-x[1], x[0])))))[0]
+
+    return list(list(zip(*sorted(fail_probs, key=lambda x:(-x[1], x[0]))))[0])
 
 
 print(solution(5, [2, 1, 2, 6, 2, 4, 3, 3]))
