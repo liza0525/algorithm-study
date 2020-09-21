@@ -3,20 +3,36 @@ sys.stdin = open('../input.txt', 'r')
 import itertools
 import copy
 
-def rotate(ground, r, c, s):
-    pass
+
+deltas = [(0, 1), (1, 0), (0, -1), (-1, 0)] # 우 하 좌 상
+
+
+def rotate(res_ground, r, c, s):
+    for ss in range(s, 0, -1):
+        now_r, now_c = r-ss, c-ss
+        temp_next_num = res_ground[r-ss][c-ss]
+        for d in range(4):
+            delta_r, delta_c = deltas[d]
+            while True:
+                if not (r-ss <= now_r + delta_r <= r+ss and c-ss <= now_c + delta_c <= c+ss):
+                    break
+                next_r, next_c = now_r + delta_r, now_c + delta_c
+                temp_next_num, res_ground[next_r][next_c] = res_ground[next_r][next_c], temp_next_num
+                now_r, now_c = next_r, next_c
+
+    return res_ground
 
 
 def play(idxs):
-    global ground, answer
-    temp_ground = copy.deepcopy(ground)
+    global ground, answer, min_num
+    res_ground = copy.deepcopy(ground)
     for idx in idxs:
         r, c, s = commands[idx]
-        temp_ground = rotate(temp_ground, r, c, s)
+        res_ground = rotate(res_ground, r, c, s)
 
-    res_min = min(list(map(lambda x: sum(x), temp_ground)))
-    if res_min < answer:
-        answer = res_min
+    temp_min_num = min(list(map(lambda x: sum(x), res_ground)))
+    if temp_min_num < min_num:
+        min_num = temp_min_num
 
 
 N, M, K = map(int, input().split())
@@ -27,10 +43,9 @@ for _ in range(K):
     r, c, s = map(int, input().split())
     commands.append((r-1, c-1, s))
 
-origin_sum_list = list(map(lambda x: sum(x), ground))
-answer = min(origin_sum_list)
+min_num = 1e9
 
 for idxs in itertools.permutations(range(K), K):
     play(idxs)
 
-print(answer)
+print(min_num)
