@@ -3,18 +3,20 @@ import sys
 sys.stdin = open('../input.txt', 'r')
 
 N, M = map(int, input().split())
-deuddo = dict()
-bodo = dict()
+people = dict()
 
 for _ in range(N):
     name = input()
-    deuddo[name] = 1
+    people[name] = 0
 
 for _ in range(M):
     name = input()
-    bodo[name] = 1
+    if name in people.keys():
+        people[name] = 1
 
-people = sorted(list(set(deuddo.keys()) & set(bodo.keys())))
-print(len(people))
-for person in people:
-    print(person)
+people_num = 0
+people = sorted([(k, v) for k, v in people.items()], key=lambda x: x[0])
+print(sum(list(zip(*people))[1]))
+for k, v in people:
+    if v == 1:
+        print(k)
