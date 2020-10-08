@@ -1,66 +1,100 @@
-from pprint import pprint
 import sys
 sys.stdin = open('../input.txt', 'r')
+from pprint import pprint
+
+def play(block_shape, c, block_num, ground):
+    global res_score
+    r = 0
+    # 블록 내리기
+    while True:
+        if block_shape == 2:
+            if r == 5 or ground[r+1][c] or ground[r+1][c+1]: break
+            else: r += 1
+        else:
+            if r == 5 or ground[r+1][c]:
+                break
+            else: r += 1
+
+    ground[r][c] = block_num
+    if block_shape == 2:
+        ground[r][c+1] = block_num
+    elif block_shape == 3:
+        ground[r-1][c] = block_num
+
+    # 줄 없애기
+    while True:
+        is_score = False
+        for line in range(6):
+            for idx in range(4):
+                if ground[line][idx] == 0:
+                    break
+            else:
+                is_score = True
+                res_score += 1
+                ground[line] = [0 for _ in range(4)]
+
+        # 줄 없어졌을 때 블록 내리기
+        if is_score:
+            for r in range(4, -1, -1):
+                for c in range(4):
+                    if ground[r][c] != 0:
+                        if c < 3 and ground[r][c] == ground[r][c+1]:
+                            now_r = r
+                            while True:
+                                if now_r + 1 > 5 or ground[now_r+1][c] or ground[now_r+1][c+1]:
+                                    break
+                                else:
+                                    now_r += 1
+                            ground[now_r][c], ground[r][c] = ground[r][c], ground[now_r][c]
+                            ground[now_r][c+1], ground[r][c+1] = ground[r][c+1], ground[now_r][c+1]
+                        elif c > 0 and ground[r][c] == ground[r][c-1]:
+                            continue
+                        else:
+                            now_r = r
+                            while True:
+                                if now_r + 1 > 5 or ground[now_r+1][c]:
+                                    break
+                                else:
+                                    now_r += 1
+                            ground[now_r][c], ground[r][c] = ground[r][c], ground[now_r][c]
+        else:
+            break
+
+    # 0, 1행 확인
+    while True:
+        if sum(ground[1]) != 0:
+            ground.pop()
+            ground.insert(0, [0 for _ in range(4)])
+        else:
+            break
 
 
-def play(g, t, j):
-    global score
-    if g == green_g:
-        if t == 1:
-            g[0][j] = 1
-        elif t == 2:
-            g[0][j], g[0][j+1] = 1, 1
-        elif t == 3:
-            g[0][j], g[1][j] = 1, 1
-    elif g == blue_g:
-        if t == 1:
-            g[0][j] = 1
-        elif t == 2:
-            g[0][j], g[1][j] = 1, 1
-        elif t == 3:
-            g[0][j], g[0][j-1] = 1, 1
-
-    row = 0
-    while row < 6:
-        pass
-    # for row in range(5, -1, -1):
-    #     if t == 1:
-    #         if not g[row][j]:
-    #             g[row][j] = 1
-    #             break
-    #     elif t == 2:
-    #         if g == green_g:
-    #             if not g[row][j] and not g[row][j+1]:
-    #                 g[row][j], g[row][j+1] = 1, 1
-    #                 break
-    #         if g == blue_g:
-    #             if not g[row][j] and not g[row-1][j]:
-    #                 g[row][j], g[row-1][j] = 1, 1
-    #                 break
-    #     elif t == 3:
-    #         if g == green_g:
-    #             if not g[row][j] and not g[row-1][j]:
-    #                 g[row][j], g[row-1][j] = 1, 1
-    #                 break
-    #         if g == blue_g:
-    #             if not g[row][j] and not g[row][j-1]:
-    #                 g[row][j], g[row][j-1] = 1, 1
-    #                 break
-    cand = []
-    for row in range(5, 1, -1):
-        if sum(g[row]) == 4:
-            score += 1
-            cand.append(row)
-
-    for row in cand:
-        pass
-
-
-green_g = [[0] * 4 for _ in range(6)]
-blue_g = [[0] * 4 for _ in range(6)]
-score = 0
 N = int(input())
-for _ in range(N):
-    t, i, j = map(int, input().split())
-    play(green_g, t, j)
-    play(blue_g, t, 3-i)
+infos = [list(map(int, input().split())) for _ in range(N)]
+res_score = 0
+green_g = [[0 for _ in range(4)] for _ in range(6)]
+blue_g = [[0 for _ in range(4)] for _ in range(6)]
+
+block_num = 1
+for block_shape, r, c in infos:
+    play(block_shape, c, block_num, green_g)
+
+    if block_shape == 1:
+        play(block_shape, 3-r, block_num, blue_g)
+    elif block_shape == 2:
+        play(3, 3-r, block_num, blue_g)
+    elif block_shape == 3:
+        play(2, 3-r-1, block_num, blue_g)
+
+    block_num += 1
+
+remain_block = 0
+for r in range(6):
+    for c in range(4):
+        if green_g[r][c]:
+            remain_block += 1
+        if blue_g[r][c]:
+            remain_block += 1
+
+print(res_score)
+print(remain_block)
