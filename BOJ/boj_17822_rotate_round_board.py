@@ -1,3 +1,6 @@
+import sys
+sys.stdin = open('../input.txt', 'r')
+
 def erase(s):
     memo = []
     for i in range(N):
