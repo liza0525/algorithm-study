@@ -40,6 +40,8 @@ def gerrymandering(boundary, d1, d2):
 
     diff = max(city_num) - min(city_num[1:])
 
+    print(city_num)
+
     if diff < min_diff:
         min_diff = diff
 
