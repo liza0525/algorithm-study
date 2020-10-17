@@ -4,13 +4,10 @@ sys.stdin = open('../input.txt', 'r')
 
 def get_time(group, stair):
     dists = []
-    # total_time = 0
     stair_r, stair_c, stair_length = stair
     for person_r, person_c in group:
         dists.append(abs(stair_r - person_r) + abs(stair_c - person_c))
     dists.sort()
-    # print('group, stair', group, stair)
-    # print(dists)
     if len(dists) <= 3:
         total_time = dists[-1] + stair_length + 1
     else:
@@ -20,12 +17,9 @@ def get_time(group, stair):
                 total_time = dists[idx + 3]
                 idx += 3
             else:
-                # total_time += (stair_length - (dists[idx + 3] - dists[idx]))
                 total_time = dists[idx + 3] + stair_length - (dists[idx + 3] - dists[idx])
                 idx += 3
 
-
-        # total_time = max(total_time + (dists[-1] - dists[idx]) + stair_length, dists[-1] + stair_length + 1)
         total_time = max(total_time + stair_length + 1, dists[-1] + stair_length + 1)
 
     return total_time
@@ -67,6 +61,5 @@ for test_case in range(T):
 
         batch_max_time = max(a_group_time, b_group_time)
         min_time = min(batch_max_time, min_time)
-        # print('=' * 50)
 
     print('#{} {}'.format(test_case+1, min_time))
