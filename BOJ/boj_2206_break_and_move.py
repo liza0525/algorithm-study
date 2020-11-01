@@ -1,46 +1,48 @@
 import sys
 sys.stdin = open('../input.txt', 'r')
-from pprint import pprint
 from collections import deque
 
-ds = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+deltas = [(-1, 0), (1, 0), (0, -1), (0, 1)]
 
-def bfs(i, j):
+
+def is_field(r, c):
+    return 0 <= r < N and 0 <= c < M
+
+
+def move(r, c):
     queue = deque()
-    queue.append((i, j))
-    dist[i][j][0] = 1
+    queue.append([r, c, 0])
+    dist[r][c][0] = 1
+
     while queue:
-        si, sj = queue.popleft()
-        for di, dj in ds:
-            ni, nj = si + di, sj + dj
-            if not(0 <= ni < N and 0 <= nj < M): continue
-            if not g[ni][nj]:
-                if not dist[ni][nj][0]:
-                    dist[ni][nj][1] = dist[si][sj][1]
-                    dist[ni][nj][0] = dist[si][sj][0] + 1
-                    queue.append((ni, nj))
-                else:
-                    if dist[si][sj][0] + 1 < dist[ni][nj][0]:
-                        dist[ni][nj][1] = dist[si][sj][1]
-                        dist[ni][nj][0] = dist[si][sj][0] + 1
-                        queue.append((ni, nj))
-                    elif dist[si][sj][0] + 1 == dist[ni][nj][0] and dist[ni][nj][1] != dist[si][sj][1]:
-                        dist[ni][nj][1] = 0
-                        dist[ni][nj][0] = dist[si][sj][0] + 1
-                        queue.append((ni, nj))
+        now_r, now_c, is_break = queue.popleft()
+        for delta_r, delta_c in deltas:
+            next_r, next_c = now_r + delta_r, now_c + delta_c
+            if not is_field(next_r, next_c): continue
+            if ground[next_r][next_c] and is_break: continue
+            if not ground[next_r][next_c]:
+                if not dist[next_r][next_c][is_break] or dist[next_r][next_c][is_break] > dist[now_r][now_c][is_break] + 1:
+                    dist[next_r][next_c][is_break] = dist[now_r][now_c][is_break] + 1
+                    queue.append((next_r, next_c, is_break))
             else:
-                if not dist[si][sj][1]:
-                    dist[ni][nj][0] = dist[si][sj][0] + 1
-                    dist[ni][nj][1] = 1
-                    queue.append((ni, nj))
+                if not dist[next_r][next_c][1] or dist[next_r][next_c][1] > dist[now_r][now_c][is_break] + 1:
+                    dist[next_r][next_c][1] = dist[now_r][now_c][is_break] + 1
+                    queue.append((next_r, next_c, 1))
+
 
 N, M = map(int, input().split())
-g = [list(map(int, input())) for _ in range(N)]
-cand = []
-min_dist = 1e9
-dist = [[[0, 0] for _ in range(M)] for _ in range(N)] # index 0 : 거리 index 1: 1을 통과했는지
+ground = [list(map(int, input())) for _ in range(N)]
+dist = [[[0, 0] for _ in range(M)] for _ in range(N)]
+# 0 벽을 한 번도 안 뚫었을 때의 최소 거리
+# 1 벽을 한 번 뚫었을 때의 최소 거리
 
-bfs(0, 0)
-# for line in dist:
-#     print(line)
-print(dist[N-1][M-1][0] if dist[N-1][M-1][0] != 0 else -1)
+move(0, 0)
+
+if dist[N-1][M-1][0] and dist[N-1][M-1][1]:
+    print(min(dist[N-1][M-1]))
+elif dist[N-1][M-1][0]:
+    print(dist[N-1][M-1][0])
+elif dist[N-1][M-1][1]:
+    print(dist[N-1][M-1][1])
+else:
+    print(-1)
